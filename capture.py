@@ -1,27 +1,11 @@
 import cv2 as cv
+import random
 import numpy as np
 import pyautogui
 import os
 import win32gui
-import mss
-
-def screenshot(l, t, r, b):
-	with mss.mss() as sct:
-		# Get information of monitor 2
-		monitor_number = 0
-		mon = sct.monitors[monitor_number]
-		# The screen part to capture
-		monitor = {
-			"top": t,
-			"left": l,
-			"width": r-l,
-			"height": b-t,
-			"mon": 0,
-		}
-		# Grab the data
-		sct_img = sct.grab(monitor)
-		img = np.array(sct.grab(monitor)) # BGR Image
-		return img
+import pickle
+from imageUtil import *
 
 def callback(hwnd, strings):
 	if win32gui.IsWindowVisible(hwnd):
@@ -36,14 +20,49 @@ def updateWindows():
 	bluestacks = []
 	win32gui.EnumWindows(callback, bluestacks)
 
+def OCR(champValues, img, threshold):
+	value = sumImage(img)
+	for k,v in champValues.items():
+		if abs(k-value) < threshold:
+			return v
+	return None
+
+i = 0
+try:
+	champValues = pickle.load(open('champValues.pkl','rb'))
+except FileNotFoundError:
+	champValues = {}
+tolerance = 100
+firstRun = True
+seen = []
 while True:
 	updateWindows()
 	l,t,r,b = map(int,bluestacks[0].split(','))
+	assert(r-l == 1246)
 	sc = screenshot(l, t, r, b)
 	cv.imshow('capture', sc)
-	sc = screenshot(l+160, t+51, r-44, b-431)
-	cv.imshow('store', sc)
-
+	store = sc[51:-431,160:-15]
+	cv.imshow('store', store)
+	img = cv.cvtColor(store, cv.COLOR_BGR2GRAY)
+	img = thresholding(img)
+	
+	cv.imshow('mask', img)
+	titles = np.array_split(img[180:-9],5,axis = 1)
+	name1 = titles[i%5][0:28,5:150]
+	i+=1
+	cv.imshow('titles', name1)
+	print(champValues.keys())
+	# if input("Save? ")!="":
+	# 	cv.imwrite(str(random.random())+".jpg", name1)
 	if cv.waitKey(1) == ord('q'):
 		cv.destroyAllWindows()
+		pickle.dump(champValues,open('champValues.pkl','wb'))
 		break
+	if not firstRun and search(champValues, name1) == None:
+		name = input("What champion is this?")
+		if name != "":
+			if name not in champValues:
+				champValues[name] = name1
+			else:
+				print(ssim(champValues[name], name1))
+	firstRun = False
