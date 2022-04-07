@@ -23,14 +23,16 @@ def screenshot(l, t, r, b):
 		return img#[:,:,:3]
 
 def search(img):
-	best = (None, 0)
+	best = (None, 0, None)
 	for filepath in os.listdir("champions"):
 		# print(img.shape,end="	")
 		im2 = cv2.imread("champions/"+filepath, cv2.IMREAD_GRAYSCALE)
 		# print(im2.shape)
 		score = ssim(img, im2)#, channel_axis=2)
 		if score > best[1]:
-			best = (im2, score)
+			best = (im2, score, filepath[:-4])
+		if score > .95:
+			return best
 	return best
 
 def grayscale(img):
