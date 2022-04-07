@@ -101,7 +101,7 @@ class Instance:
 		champions = []
 		for i in range(5):
 			picture, score, name = imageUtil.search(self.getStorePos(i))
-			if score > .8:
+			if score > .7:
 				champions.append(name)
 			else:
 				cv2.imwrite("champions/"+str(random.random())+".png", self.getStorePos(i))
