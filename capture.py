@@ -14,30 +14,42 @@ try:
 except FileNotFoundError:
 	champValues = {}
 
-storePos = [
-	(131, 48),
-	(305, 48),
-	(479, 48),
-	(653, 48),
-	(828, 48),
-]
 
-cardSize = (298-131, 249-48)
+def storePos(sc, pos):
+	storePos = [
+		(131, 48),
+		(305, 48),
+		(479, 48),
+		(653, 48),
+		(827, 48),
+	]
+
+	cardSize = (298-131, 249-48)
+	return grayscale(sc[storePos[pos][1]:storePos[pos][1]+cardSize[1],storePos[pos][0]:storePos[pos][0]+cardSize[0]])
 
 i = 0
+win.moveTo(0,0)
 while True:
 	l,t,r,b = (win.left, win.top, win.right, win.bottom)
-	win.resizeTo(1040,600)
-	# win.moveTo(0,0)
-	# win.height = 600
 	if(r-l != 1040):
-		print(win)
-		print("Invalid window size, skipping")
+		win.resizeTo(1040,600)
+		print("Invalid window size, resizing")
 		continue
 	sc = screenshot(l, t, r, b)
 	cv.imshow('capture', sc)
 	i = (i+1)%5
-	cv.imshow("store1", sc[storePos[i][1]:storePos[i][1]+cardSize[1],storePos[i][0]:storePos[i][0]+cardSize[0]])
-	if cv.waitKey(1) == ord('q'):
+	cv.imshow("store1", storePos(sc, i))
+	guess, score = search(storePos(sc,i))
+	if guess is not None:
+		cv.imshow("Prediction:", guess)
+	cv.waitKey(1)
+	print("prediction of score:",score)
+	if .32<score<.85:
+		name = input("What champion is this: ")
+	else:
+		name = ""
+	if name == "quit":
 		cv.destroyAllWindows()
 		break
+	if name:
+		cv2.imwrite("champions/"+name+".png", storePos(sc, i))

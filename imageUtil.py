@@ -1,6 +1,7 @@
 import cv2
 import mss
 import numpy as np
+import os
 from skimage.metrics import structural_similarity as ssim
 
 def screenshot(l, t, r, b):
@@ -19,23 +20,21 @@ def screenshot(l, t, r, b):
 		# Grab the data
 		sct_img = sct.grab(monitor)
 		img = np.array(sct.grab(monitor)) # BGR Image
-		return img
+		return img#[:,:,:3]
 
-def search(champValues, title, threshold = .8):
-	for k, v in champValues.items():
-		if ssim(title, v)>threshold:
-			return k
-	return None
+def search(img):
+	best = (None, 0)
+	for filepath in os.listdir("champions"):
+		# print(img.shape,end="	")
+		im2 = cv2.imread("champions/"+filepath, cv2.IMREAD_GRAYSCALE)
+		# print(im2.shape)
+		score = ssim(img, im2)#, channel_axis=2)
+		if score > best[1]:
+			best = (im2, score)
+	return best
+
+def grayscale(img):
+	return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 # look at
 # https://www.geeksforgeeks.org/python-image-classification-using-keras/
-
-# noise removal
-def remove_noise(image):
-    return cv2.medianBlur(image,1)
-
-def thresholding(image):
-    return cv2.threshold(image, 0, 200, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-
-def sumImage(image):
-	return int(sum(sum(image)))
