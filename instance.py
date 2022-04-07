@@ -1,11 +1,10 @@
 import numpy as np
+import random
 import cv2
 from time import sleep
 import imageUtil
 import pygetwindow
 import pyautogui
-
-
 
 class Instance:
 	def __init__(self, win):
@@ -18,6 +17,15 @@ class Instance:
 			self.resize()
 			return False
 		return True
+
+	def compare(self, color, baseline, threshold = 15):
+		return sum(abs(color- np.array(baseline)))<threshold
+
+	def showArea(self, x, y, margin = 5):
+		self.screenshot()
+		cv2.imshow("showArea",self.sc[y-margin:y+margin,x-margin:x+margin,:])
+		print(self.sc[(y,x)])
+		cv2.waitKey(1)
 
 	def resize(self):
 		self.win.resizeTo(1040,600)
@@ -55,8 +63,9 @@ class Instance:
 	def isStoreOpen(self):
 		self.screenshot()
 		sc = self.sc
-		tier5shop = (910,280)
-		return all((sc[tier5shop[::-1]]) == (44, 149, 220, 255))
+		tier5shop = (913,280)
+		# self.showArea(913,280)
+		return self.compare(sc[tier5shop[::-1]],(44, 149, 220, 255))
 
 	def reroll(self):
 		pos = (950,400)
@@ -84,7 +93,9 @@ class Instance:
 			return True
 		return False
 
-	def readShop(self):
+	def readShop(self, open=False):
+		if self.isStoreOpen() == False and open == False:
+			return []
 		if self.openShop() == False:
 			return []
 		champions = []
@@ -93,5 +104,6 @@ class Instance:
 			if score > .8:
 				champions.append(name)
 			else:
+				cv2.imwrite("champions/"+str(random.random())+".png", self.getStorePos(i))
 				champions.append("?")
 		return (champions)

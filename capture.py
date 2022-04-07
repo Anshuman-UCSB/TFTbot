@@ -28,7 +28,7 @@ while True:
 	# cv.imshow("store/prediction", np.vstack((inst.getStorePos(i), guess)))
 	cv.waitKey(1)
 	# inst.openShop()
-	print(inst.readShop())
+	print(inst.readShop(open = False))
 	# print("prediction of score:",score)
 	# if inst.isStoreOpen() and score<.80:
 	# 	name = input("What champion is this: ")
