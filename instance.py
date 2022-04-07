@@ -47,7 +47,7 @@ class Instance:
 		if savePos:
 			pyautogui.moveTo(*start)
 
-	def getStorePos(self,pos):
+	def getShopPos(self,pos):
 		sc = self.sc
 		storePos = [
 			(131, 48),
@@ -60,11 +60,13 @@ class Instance:
 		cardSize = (298-131, 249-48)
 		return imageUtil.grayscale(sc[storePos[pos][1]:storePos[pos][1]+cardSize[1],storePos[pos][0]:storePos[pos][0]+cardSize[0]])
 
-	def buyStorePos(self, pos):
-		if self.isStoreOpen():
+	def buyShopPos(self, pos,open=False):
+		if open:
+			self.openShop()
+		if self.isShopOpen():
 			self.click(220+160*pos,140)
 	
-	def isStoreOpen(self):
+	def isShopOpen(self):
 		self.screenshot()
 		sc = self.sc
 		tier5shop = (913,280)
@@ -85,29 +87,29 @@ class Instance:
 		# cv2.imshow("section",self.sc[530:540,925:935,:])
 		# print(self.sc[(920,535)[::-1]])
 		self.screenshot()
-		if self.isStoreOpen():
+		if self.isShopOpen():
 			return True
 		
 		if (all(self.sc[(920,535)[::-1]] == (109, 171, 199, 255)) or \
 			all(self.sc[(930,535)[::-1]] == (109, 171, 199, 255))) and \
-				self.isStoreOpen() == False:
-			while self.isStoreOpen() == False:
+				self.isShopOpen() == False:
+			while self.isShopOpen() == False:
 				self.clickShop()
 				self.screenshot()
 			return True
 		return False
 
 	def readShop(self, open=False):
-		if self.isStoreOpen() == False and open == False:
+		if self.isShopOpen() == False and open == False:
 			return []
 		if self.openShop() == False:
 			return []
 		champions = []
 		for i in range(5):
-			picture, score, name = imageUtil.search(self.getStorePos(i))
+			picture, score, name = imageUtil.search(self.getShopPos(i))
 			if score > .7:
 				champions.append(name)
 			else:
-				cv2.imwrite("champions/"+str(random.random())+".png", self.getStorePos(i))
+				cv2.imwrite("champions/"+str(random.random())+".png", self.getShopPos(i))
 				champions.append("?")
 		return (champions)

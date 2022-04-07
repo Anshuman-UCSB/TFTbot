@@ -21,17 +21,17 @@ while True:
 	cv.imshow('capture', inst.sc)
 	i = (i+1)%5
 	# if i == 0:
-	# 	if inst.isStoreOpen():
+	# 	if inst.isShopOpen():
 	# 		print("rolling")
 	# 		inst.reroll()
-	# guess, score,_ = search(inst.getStorePos(i))
-	# cv.imshow("store/prediction", np.vstack((inst.getStorePos(i), guess)))
-	inst.buyStorePos(i)
+	# guess, score,_ = search(inst.getShopPos(i))
+	# cv.imshow("store/prediction", np.vstack((inst.getShopPos(i), guess)))
+	inst.buyShopPos(i)
 	cv.waitKey(1)
 	# inst.openShop()
 	# print(inst.readShop(open = False))
 	# print("prediction of score:",score)
-	# if inst.isStoreOpen() and score<.80:
+	# if inst.isShopOpen() and score<.80:
 	# 	name = input("What champion is this: ")
 	# else:
 	# 	name = ""
