@@ -60,6 +60,10 @@ class Instance:
 		cardSize = (298-131, 249-48)
 		return imageUtil.grayscale(sc[storePos[pos][1]:storePos[pos][1]+cardSize[1],storePos[pos][0]:storePos[pos][0]+cardSize[0]])
 
+	def buyStorePos(self, pos):
+		if self.isStoreOpen():
+			self.click(220+160*pos,140)
+	
 	def isStoreOpen(self):
 		self.screenshot()
 		sc = self.sc

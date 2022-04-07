@@ -26,9 +26,10 @@ while True:
 	# 		inst.reroll()
 	# guess, score,_ = search(inst.getStorePos(i))
 	# cv.imshow("store/prediction", np.vstack((inst.getStorePos(i), guess)))
+	inst.buyStorePos(i)
 	cv.waitKey(1)
 	# inst.openShop()
-	print(inst.readShop(open = False))
+	# print(inst.readShop(open = False))
 	# print("prediction of score:",score)
 	# if inst.isStoreOpen() and score<.80:
 	# 	name = input("What champion is this: ")
