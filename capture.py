@@ -12,31 +12,20 @@ win = pygetwindow.getWindowsWithTitle("BlueStacks App")[0]
 
 inst = Instance(win)
 
-i = 0
 while True:
 	# win.moveTo(0,0)
 	if inst.assertSize() == False:
 		continue
 	sc = inst.screenshot()
 	cv.imshow('capture', inst.sc)
-	i = (i+1)%5
-	# if i == 0:
-	# 	if inst.isShopOpen():
-	# 		print("rolling")
-	# 		inst.reroll()
-	# guess, score,_ = search(inst.getShopPos(i))
-	# cv.imshow("store/prediction", np.vstack((inst.getShopPos(i), guess)))
-	inst.buyShopPos(i)
+	if inst.isShopOpen():
+		for i in range(5):
+			card = inst.getShopPos(i)
+			_, score, name = imageUtil.search(card)
+			if score > .7:
+				os.mkdir(f"captures/{name}",)
+				cv.imwrite("captures/name/"+str(random.random())+".jpg", card)
+			else:
+				cv.imwrite("captures/unlabeled/"+str(random.random())+".jpg", card)
+
 	cv.waitKey(1)
-	# inst.openShop()
-	# print(inst.readShop(open = False))
-	# print("prediction of score:",score)
-	# if inst.isShopOpen() and score<.80:
-	# 	name = input("What champion is this: ")
-	# else:
-	# 	name = ""
-	# if name == "quit":
-	# 	cv.destroyAllWindows()
-	# 	break
-	# if name:
-	# 	cv2.imwrite("champions/"+name+".png", storePos(sc, i))
